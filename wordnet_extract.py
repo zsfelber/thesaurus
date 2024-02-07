@@ -39,26 +39,29 @@ def parse_db(db_path, pos):
         for r in refs:
             linked_synonyms[r].add(lemma)
 
-    matched = set()
+    #matched = set()
     for r in raw_data:
         (data, gloss) = r.strip().split("|")
         buff = data.strip().split(" ")
         logger.debug("Raw line: {0}".format(buff))
-        (word_id, _, _, _, word, postfix, *other) = buff
+        (word_id, _, _, cnt_words, *other) = buff  # word, postfix, *other
 
-        synset = linked_synonyms[word_id] - set([word])
-        ref_count[word] += 1
-        data = {
-            "pos": pos,
-            "wordnet_id": word_id,
-            "word": word,
-            "key": "{}_{}".format(word, ref_count[word]),
-            "synonyms": list(synset),
-            "desc": [g.strip() for g in gloss.split(";")],
-        }
-        logger.debug("Parsed line: {0}".format(data))
-        matched.add(word_id)
-        yield data
+        for w in range(int(cnt_words, 16)):
+            word = other[2 * w]
+
+            synset = linked_synonyms[word_id] - set([word])
+            ref_count[word] += 1
+            data = {
+                "pos": pos,
+                "wordnet_id": word_id,
+                "word": word,
+                "key": "{}_{}".format(word, ref_count[word]),
+                "synonyms": list(synset),
+                "desc": [g.strip() for g in gloss.split(";")],
+            }
+            logger.debug("Parsed line: {0}".format(data))
+            #matched.add(word_id)
+            yield data
 
 
 def main(args):
