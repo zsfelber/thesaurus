@@ -46,8 +46,17 @@ def parse_db(db_path, pos):
         logger.debug("Raw line: {0}".format(buff))
         (word_id, _, _, cnt_words, *other) = buff  # word, postfix, *other
 
-        for w in range(int(cnt_words, 16)):
+        # remove names
+        n_cnt_words = int(cnt_words, 16)
+        num_things2 = int(other[2 * n_cnt_words], 16)
+        if num_things2 > 0:
+            nounkind = other[2 * n_cnt_words + 1]
+        else:
+            nounkind = ""
+        #logger.info("nounkind:{0}".format(nounkind))
+        for w in range(n_cnt_words):
             word = other[2 * w]
+            #logger.info("word:{0}".format(word))
 
             synset = linked_synonyms[word_id] - set([word])
             ref_count[word] += 1
@@ -58,7 +67,9 @@ def parse_db(db_path, pos):
                 "key": "{}_{}".format(word, ref_count[word]),
                 "synonyms": list(synset),
                 "desc": [g.strip() for g in gloss.split(";")],
+                "is_name": nounkind == "@i"
             }
+
             logger.debug("Parsed line: {0}".format(data))
             #matched.add(word_id)
             yield data
