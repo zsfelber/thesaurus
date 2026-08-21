@@ -1,5 +1,5 @@
 python3 wordnet_extract.py --db_path /home/zsfelber/Downloads/wn3.1.dict/dict en_thesaurus.jsonl
-
+python3 wordnet_extract.py --db_path /home/zsfelber/Downloads2/WordNet-3.1/dict en_thesaurus.jsonl
 
 # thesaurus
 Offline database of synonyms/thesaurus
